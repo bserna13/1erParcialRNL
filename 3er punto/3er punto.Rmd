@@ -30,65 +30,81 @@ plot(x , y)
 
 El gráfico relaciona la proporcionalidad inversa entre la variable tiempo y la variable velocidad de cada uno de los vagones de manera correcta.
 
-
-# Modelo propuesto:
-
+## Modelo 1:  (a\*exp(b\*x)
 
 ```{r}
-install.packages("minpack.lm")
+#install.packages("minpack.lm")
 ```
-```{r}
 
+
+```{r}
+# Cargar la biblioteca minpack.lm
 library(minpack.lm)
 
-modelo <- function(x, p, c) {
-  return(x^p + c)
+
+# Función de modelo
+modelo <- function(x,a,b) {
+  return(a*exp(b*x))
 }
 
-ajuste_inicial <- nlsLM(y ~ modelo(x, p, c), start = list(p =-0.5, c = 4))
+# Estimar valores iniciales utilizando nlsLM
+ajuste_inicial <- nlsLM(data= datos, y ~ modelo(x, a, b),
+                        start = list(a = 1,b = 1))
 
 # Obtener los valores iniciales estimados
 valores_iniciales_estimados <- coef(ajuste_inicial)
 print(valores_iniciales_estimados)
 
 # Ajustar el modelo final con los valores iniciales estimados
-ajuste_final <- nlsLM(y ~ modelo(x, p, c), start = valores_iniciales_estimados)
-
-```
-```{r}
-summary(ajuste_final)
-```
-
-
-
-```{r}
-# MODELO AJUSTE DE CURVA y(teta) = X^teta + ei
-
-m1 <- nls(y ~ (x-a)^p + c,  data= datos, start = list(a=0.8,p = -1, c = 9 ),  algorithm = "port")  # añadí  algorithm = "port"
+ajuste_final <- nlsLM(y ~ modelo(x,a,b), start = valores_iniciales_estimados)
 
 ```
 
 
-
 ```{r}
-summary(m1)
-```
-
-```{r}
-teta <- coefficients(m1)
-```
-
-
-```{r}
-plot(x,y)
-points(x,(x^(-2.334684) + 12.074184 ),type="b",col="red")
+plot(y ~ x, data = datos)
+lines(seq(1, 3, length.out = 50), 
+      predict(ajuste_final, 
+              newdata = data.frame(x = seq(1, 3, length.out = 50))))
 
 ```
 
 
+## Modelo 2: a \* x\^b
 
 ```{r}
 
+# Función de modelo
+modelo <- function(x,a,b) {
+  return(a*(x^b))
+}
+
+# Estimar valores iniciales utilizando nlsLM
+ajuste_inicial <- nlsLM(data= datos, y ~ modelo(x, a, b),
+                        start = list(a = 1,b = 1))
+
+# Obtener los valores iniciales estimados
+valores_iniciales_estimados <- coef(ajuste_inicial)
+print(valores_iniciales_estimados)
+
+# Ajustar el modelo final con los valores iniciales estimados
+ajuste_final <- nlsLM(y ~ modelo(x,a,b), start = valores_iniciales_estimados)
+
+
+```
+
+
+```{r}
+plot(y ~ x, data = datos)
+lines(seq(1, 3, length.out = 50), 
+      predict(ajuste_final, 
+      newdata = data.frame(x = seq(1, 3, length.out = 50))))
+
+```
+
+
+
+```{r}
 # Ajustar un modelo spline cúbico a los vagones
 spline_model_vagon<- smooth.spline(datos$x, datos$y, df = 6)  # Puedes ajustar df según la suavidad deseada
 
@@ -102,6 +118,12 @@ nuevos_tiempos <- c(31, 32, 33)  # Nuevos valores de tiempo
 predicciones <- predict(spline_model_vagon, xout = nuevos_tiempos)
 print(predicciones$y)
 
+
+
 ```
 
-Con un suavizado moderado de los datos (spar= 1.045756 ), y una penalización relativamente pequeña (lambda es igual a 0.001086861), y GCV es igual a 0.003125936, medida de la bondad de ajuste del modelo spline suavizado , lo que sugiere un buen ajuste del modelo a los datos.
+Con un suavizado moderado de los datos (spar= 1.045756 ), y una penalización relativamente pequeña (lambda es igual a 0.001086861), y GCV es igual a 0.003125936, medida de la bondad de ajuste del modelo spline suavizado , lo que sugiere un buen ajuste del modelo a los datos
+
+
+
+.
