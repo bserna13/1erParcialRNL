@@ -1,0 +1,91 @@
+---
+title: "3er punto"
+output: html_document
+date: "2023-10-02"
+---
+
+
+```{r cars}
+# install.packages("readxl")
+library(readxl)
+
+```
+
+```{r}
+datos <- read_excel("Metro.xlsx")
+```
+
+```{r}
+x <- c(datos$`Tiempo V1` , datos$`Tiempo V2` , datos$`Tiempo V3`)
+y <- c(datos$`Velocidad V1` , datos$`Velocidad V2` , datos$`Velocidad V3`)
+
+datos <- data.frame(x=x,y=y)
+```
+
+# Analisis descritivo
+```{r}
+plot(x , y)
+```
+
+# Modelo:
+
+
+```{r}
+install.packages("minpack.lm")
+```
+```{r}
+# Cargar la biblioteca minpack.lm
+library(minpack.lm)
+
+
+# Función de modelo
+modelo <- function(x, p, c) {
+  return(x^p + c)
+}
+
+# Estimar valores iniciales utilizando nlsLM
+ajuste_inicial <- nlsLM(y ~ modelo(x, p, c), start = list(p = , c = 4))
+
+# Obtener los valores iniciales estimados
+valores_iniciales_estimados <- coef(ajuste_inicial)
+print(valores_iniciales_estimados)
+
+# Ajustar el modelo final con los valores iniciales estimados
+ajuste_final <- nlsLM(y ~ modelo(x, p, c), start = valores_iniciales_estimados)
+
+```
+
+
+```{r}
+# MODELO AJUSTE DE CURVA y(teta) = X^teta + ei
+
+m1 <- nls(y ~ (x-a)^p + c,start = list(a=0.8,p = -1, c = 9 ))
+
+```
+
+
+```{r}
+summary(m1)
+```
+
+```{r}
+teta <- coefficients(m1)
+```
+
+
+```{r}
+plot(x,y)
+points(x,(x^(-2.334684) + 12.074184 ),type="l",col="red")
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+

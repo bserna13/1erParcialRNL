@@ -1,0 +1,4 @@
+"0","x <- c(datos$`Tiempo V1` , datos$`Tiempo V2` , datos$`Tiempo V3`)"
+"0","y <- c(datos$`Velocidad V1` , datos$`Velocidad V2` , datos$`Velocidad V3`)"
+"0",""
+"0","datos <- data.frame(x=x,y=y)"
