@@ -114,15 +114,18 @@ lines(spline_model_vagon$x, spline_model_vagon$y, col = "red", lwd = 2)
 legend("topright", legend = c("Datos Originales", "Spline Ajustado"), col = c("blue", "red"), lty = 1, lwd = 2)
 
 # Evaluar el modelo en nuevos valores de tiempo (por ejemplo, para hacer predicciones)
-nuevos_tiempos <- c(31, 32, 33)  # Nuevos valores de tiempo
+nuevos_tiempos <- c(4, 5, 7)  # Nuevos valores de tiempo
 predicciones <- predict(spline_model_vagon, xout = nuevos_tiempos)
 print(predicciones$y)
 
 
 
 ```
+```{r}
+spline_model_vagon
+```
 
-Con un suavizado moderado de los datos (spar= 1.045756 ), y una penalización relativamente pequeña (lambda es igual a 0.001086861), y GCV es igual a 0.003125936, medida de la bondad de ajuste del modelo spline suavizado , lo que sugiere un buen ajuste del modelo a los datos
+Con un suavizado moderado de los datos (spar= 1.045756 ), y una penalización relativamente pequeña (lambda es igual a 0.001086861), y GCV es igual a 0.003125936, medida de la bondad de ajuste del modelo spline suavizado , lo que sugiere un buen ajuste del modelo a los datos; lo que indica que la velocidad con que llegan los tres primeros  vagones del Metro de Medellín a las estaciones se pueden modelar y/o ajustar con un modelo de regresion no lineal como el spline suavizado, teniendo en cuenta el tiempo de llegada de éstos mismos a la estación, y ademas se pueden hacer predicciones, teniendo en cuenta que en condiciones normales de operación del servicio, el tiempo que emplea un tren al entrar por cierta punto de referencia a la estación no es exageradamente grande y se puede medir en segundos.
 
 
 
