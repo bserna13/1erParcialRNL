@@ -1,6 +1,0 @@
-"0","# MODELO AJUSTE DE CURVA y(teta) = X^teta + ei"
-"0",""
-"0","m1 <- nls(y ~ (x-a)^p + c,start = list(a=0.8,p = -1, c = 9 ))"
-"2","Error in numericDeriv(form[[3L]], names(ind), env, central = nDcentral) : 
-  Missing value or an infinity produced when evaluating the model
-"
