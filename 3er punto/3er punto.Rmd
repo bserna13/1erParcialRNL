@@ -129,4 +129,189 @@ Con un suavizado moderado de los datos (spar= 1.045756 ), y una penalización re
 
 
 
-.
+
+
+
+
+
+
+
+PUNTO DE LA ESTATURA VS EDAD
+
+```{r}
+library(readr)
+maduraciónsexual <- read_csv2("maduraciónsexual.csv")
+head(maduraciónsexual)
+
+#View(maduraciónsexual)
+#fecha_actual <- Sys.Date()
+
+#maduraciónsexual$FECHANACIM <- as.Date(maduraciónsexual$FECHANACIM, format = "%Y-%m-%d")  # Asegúrate de que la fecha de nacimiento esté en el formato correcto
+#maduraciónsexual$Edad <- as.integer(difftime(fecha_actual, maduraciónsexual$FECHANACIM, units = "days") / 365)
+
+#head(maduraciónsexual)
+
+```
+ 
+```{r}
+masculino <- maduraciónsexual[maduraciónsexual$SEXO == 1, ]
+femenino <- maduraciónsexual[maduraciónsexual$SEXO == 2, ]
+
+```
+
+
+```{r}
+plot(femenino$EDAD, femenino$ESTATURAP1, pch = 19, col = "blue",  xlab = "Edad mujeres", ylab = "Estatura mujeres")
+media_estatura <- tapply(femenino$ESTATURAP1, femenino$EDAD, mean)
+lines(names(media_estatura), media_estatura, col = "red", type = "b")
+
+```
+```{r}
+mujer<- data.frame(Eda=femenino$EDAD , esta=femenino$ESTATURAP1)
+modmujer= nls(esta~ SSlogis(log(Eda), Asym, xmid, scal), mujer)
+summary(modmujer)
+## the coefficients only:
+coef(modmujer)
+## including their SE, etc:
+coef(summary(modmujer))
+```
+
+
+Según los resultados arrojados acerca del ajuste de la curva del modelo logistico suavizado, Asym=199.16051  representa el valor asintótico superior o límite superior que la variable dependiente (en este caso, la estatura) se acerca a medida que la variable independiente (la edad) aumenta o disminuye infinitamente. En otras palabras, "Asym" indica el valor máximo al que tiende la variable dependiente. En un contexto de crecimiento, esto podría representar la estatura máxima que una persona podría alcanzar. xmid=1.53644  representa la ubicación del punto medio o el valor de la variable independiente en el cual la variable dependiente alcanza la mitad de su valor asintótico superior. En el contexto de la relación entre la edad y la estatura, "xmid" indica la edad en la que se espera que la estatura alcance el 50% de su valor máximo; y scal   0.9338134 representa la ubicación del punto medio o el valor de la variable independiente en el cual la variable dependiente alcanza la mitad de su valor asintótico superior. En el contexto de la relación entre la edad y la estatura, "xmid" indica la edad en la que se espera que la estatura alcance el 50% de su valor máximo
+
+
+```{r}
+
+
+ggplot(data = mujer, aes(x = Eda, y = esta)) +
+  geom_point() +
+  labs(x = "Edad", y = "Estatura") +
+  geom_smooth(method = "nls", 
+              formula = y ~ 190 / (1 + exp(-b * (x - x0))),
+              method.args = list(start = c(b = 1, x0 = 10)),
+              se = FALSE, 
+              color = "blue") +
+  theme_minimal()
+
+```
+
+modelar la estatura en función de la edad es util a la hora de comprender cómo la estatura cambia a medida que las personas envejecen, es por ello que se implementa un modelo de regresión no lineal logistico para observar esta tendencia. En ella se puede ver que para hombres (niños) hasta cierta edad  15 a 17 años la estatura va progresivamente en aunmento, mientras que de ahí en adelante se mantiene relativamente estable, hasta de nuevo llegar a una edad donde la estatura empieza a decrecer.
+
+
+
+```{r}
+plot(masculino$EDAD,masculino$ESTATURAP1, pch = 19, col = "blue",  xlab = "Edad hombres", ylab = "Estatura Hombres")
+media_esta <- tapply(masculino$ESTATURAP1,masculino$EDAD, mean)
+lines(names(media_esta), media_esta, col = "red", type = "b")
+```
+ 
+ 
+ 
+```{r}
+
+plot( maduraciónsexual$EDAD, maduraciónsexual$ESTATURAP1, pch = 19, col = "blue",  xlab = "Edad", ylab = "Estatura")
+media_estatu<- tapply(maduraciónsexual$ESTATURAP1, maduraciónsexual$EDAD, mean)
+lines(names(media_estatu), media_estatu, col = "red", type = "b")
+
+```
+ 
+
+
+```{r}
+hombre <- data.frame(edad = masculino$EDAD, estatura = masculino$ESTATURAP1)
+modelo_logistico_hombre <- nls(estatura ~ 190 / (1 + exp(-b * (edad - x0))), 
+                               data = hombre, 
+                               start = list(b = 1, x0 = 10))
+summary(modelo_logistico_hombre)
+```
+
+Un valor positivo de $b$ indica un aumento en la estatura a medida que la edad aumenta, en este caso, $b$ se estima en aproximadamente $0.148827$ lo cual muestra relativo aumento a medida que se cumplen los primero años de edad; mientras que $x_0$ es el punto de inflexión de la curva logística. $x_0$ se estima en aproximadamente $3.369932$ los cuales representan las estimaciones de la pendiente y el desplazamiento horizontal (traslación) de la curva logística, respectivamente.
+
+En este caso, como los parametros son estadisticamente significativos, se pueden ajustar los datos a este modelo; 
+Achieved convergence tolerance: 4.834e-07 indica la tolerancia de convergencia alcanzada en el proceso de ajuste del modelo, en este caso, se alcanzó una tolerancia muy baja, lo que sugiere una buena convergencia del modelo.
+
+
+```{r}
+library(ggplot2)
+ggplot(data = hombre, aes(x = edad, y = estatura)) +
+  geom_point() +
+  labs(x = "Edad de hombres", y = "Estatura de hombres") +
+  geom_smooth(method = "nls", 
+              formula = y ~ 190 / (1 + exp(-b * (x - x0))),
+              method.args = list(start = c(b = 1, x0 = 10)),
+              se = FALSE, 
+              color = "blue") +
+  theme_minimal()
+
+```
+
+Aquí el modelo está tratando de describir cómo la estatura de los hombres cambia a medida que envejecen. Por ello, un gráfico del ajuste del modelo ayuda a visualizar que para el género masculino la tendencia de la altura es a crecer hasta cierta edad, y que despúes de esto podrían mantenerse estable estas metricas hasta nuevamente marcar tendencia, esta vez a decrecer luego de cumplir cierta cantidad de años; sin embargo esto no se refleja en este gráfico, donde solo es observable la trayectoria al crecimiento progresivo respecto a edades tempranas.
+ 
+ 
+ 
+```{r}
+Estatura <- maduraciónsexual$ESTATURAP1
+Edad <- maduraciónsexual$EDAD
+
+datos<-data.frame(Estatura, Edad)
+plot(Estatura~ Edad, data=datos)
+```
+
+En general se observa que el crecimiento de las personas en este estudio es hasta edades entre 14-17 y que despues de cumplir estos años, parece mantenerse estables entre 150-170 centímetros  de estatura.
+
+ 
+
+```{r}
+nuevas_edades <- data.frame(edad = c(20, 25, 30, 35, 40))
+
+pronosticos <- predict(modelo_logistico_hombre, newdata = nuevas_edades)
+pronosticos
+
+```
+Según los datos proporcionados, se realiza un pronostico de estaturas para edades  futuras de los hombres incluidos en este estudio para conocer la estatura que tendrían en tales edades.
+ 
+```{r}
+deviance(modelo_logistico_hombre)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+PUNTO DE NADADORES
+
+```{r}
+Nadadores <- read.table("Finalestilolibre400metros.txt", header = TRUE, sep = "\t",  stringsAsFactors = FALSE)
+head(Nadadores)
+```
+
+```{r}
+sexo<-c(rep(1,36),rep(2,43))
+```
+
+```{r}
+temp<-matrix(temp,ncol=16,byrow=T)
+temp
+temp2<-matrix(as.numeric(temp[,-c(1,2)]),ncol=14,byrow=F)
+temp2
+tiempos.seg<-cbind(temp2[,c(1 ,2)],60*temp2[,c(3,5,7,9,11,13)]+temp2[,c(3,5,7,9,11,13)+1])
+tiempos.seg
+matplot(t(tiempos.seg),type="b")
+boxplot(tiempos.seg)
+plot(tiempos.seg[,1],tiempos.seg[,8])
+cor(tiempos.seg)
+temp3<-apply(tiempos.seg,1,rank)
+cor(temp3)
+```
+
+
+
+
