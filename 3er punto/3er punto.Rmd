@@ -1,19 +1,66 @@
 ---
-title: "3er punto"
+title: "Regresión No lineal"
+author: "Zuleima Carriazo"
+date: "2023-10-05"
 output: html_document
-date: "2023-10-02"
 ---
 
+---
+header-includes:
+- \usepackage{longtable}
+- \usepackage[utf8]{inputenc}
+- \usepackage[spanish]{babel}\decimalpoint
+- \setlength{\parindent}{1.25cm}
+- \usepackage{amsmath}
+- \usepackage{array}
+- \usepackage{float}
+- \usepackage{multirow}
+output:
+  pdf_document: 
+    number_sections: yes
+fontsize: 12pt
+papersize: letter
+geometry: margin = 1in
+language: "es"
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, fig.align = "center",fig.pos = "H")
+library(kableExtra)
+library(knitr)
+library(leaps)
+library(tidyverse)
+```
+
+
+```{=tex}
+\input{titlepage}
+\thispagestyle{empty}
+\tableofcontents
+\newpage
+\thispagestyle{empty}
+\listoffigures
+\listoftables
+\newpage
+```
+
+
+```{=tex}
+\pagestyle{myheadings}
+\setcounter{page}{3}
+```
 
 ```{r cars}
-# install.packages("readxl")
 library(readxl)
 
 ```
 
 ```{r}
 datos <- read_excel("Metro.xlsx")
-View(datos)
+head(datos)
 ```
 
 ```{r}
@@ -22,6 +69,15 @@ y <- c(datos$`Velocidad V1` , datos$`Velocidad V2` , datos$`Velocidad V3`)
 
 datos <- data.frame(x=x,y=y)
 ```
+
+
+
+
+![](imagen1.jpeg)
+
+![](imag2.jpeg)
+
+
 
 # Analisis descritivo
 ```{r}
@@ -60,6 +116,8 @@ ajuste_final <- nlsLM(y ~ modelo(x,a,b), start = valores_iniciales_estimados)
 
 ```
 
+Por el criterio de $ residual-sum-of-squares$ próximo a $1$ indica para la suma de los cuadrados de los residuos del modelo con este valor alto, el modelo no es capaz de explicar una gran proporción de la variabilidad en los datos. Por lo que se ajusta la velocidad de llegada de los vagones del metro Medellín con otro modelo que haga mejores estimaciones
+
 
 ```{r}
 plot(y ~ x, data = datos)
@@ -92,7 +150,7 @@ ajuste_final <- nlsLM(y ~ modelo(x,a,b), start = valores_iniciales_estimados)
 
 
 ```
-
+Con este nuevo ajuste, se observa una mejor representación del comportamiento de las velocidades respecto al tiempo de llegada a la estación de los vagones del metro
 
 ```{r}
 plot(y ~ x, data = datos)
@@ -103,32 +161,26 @@ lines(seq(1, 3, length.out = 50),
 ```
 
 
+## Modelo 3: Spline suavizado
 
 ```{r}
-# Ajustar un modelo spline cúbico a los vagones
-spline_model_vagon<- smooth.spline(datos$x, datos$y, df = 6)  # Puedes ajustar df según la suavidad deseada
 
-# Graficar los datos originales y el modelo spline ajustado
+spline_model_vagon<- smooth.spline(datos$x, datos$y, df = 6)
+
 plot(datos$x, datos$y, type = "b", col = "blue", xlab = "Tiempo de llegada", ylab = "Velocidad de los vagones")
 lines(spline_model_vagon$x, spline_model_vagon$y, col = "red", lwd = 2)
 legend("topright", legend = c("Datos Originales", "Spline Ajustado"), col = c("blue", "red"), lty = 1, lwd = 2)
 
-# Evaluar el modelo en nuevos valores de tiempo (por ejemplo, para hacer predicciones)
-nuevos_tiempos <- c(4, 5, 7)  # Nuevos valores de tiempo
+nuevos_tiempos <- c(4, 5, 7) 
 predicciones <- predict(spline_model_vagon, xout = nuevos_tiempos)
 print(predicciones$y)
-
-
 
 ```
 ```{r}
 spline_model_vagon
 ```
 
-Con un suavizado moderado de los datos (spar= 1.045756 ), y una penalización relativamente pequeña (lambda es igual a 0.001086861), y GCV es igual a 0.003125936, medida de la bondad de ajuste del modelo spline suavizado , lo que sugiere un buen ajuste del modelo a los datos; lo que indica que la velocidad con que llegan los tres primeros  vagones del Metro de Medellín a las estaciones se pueden modelar y/o ajustar con un modelo de regresion no lineal como el spline suavizado, teniendo en cuenta el tiempo de llegada de éstos mismos a la estación, y ademas se pueden hacer predicciones, teniendo en cuenta que en condiciones normales de operación del servicio, el tiempo que emplea un tren al entrar por cierta punto de referencia a la estación no es exageradamente grande y se puede medir en segundos.
-
-
-
+Con un suavizado moderado de los datos (spar= 1.045756 ), y una penalización relativamente pequeña (lambda es igual a 0.001086861), y GCV igual a 0.003125936, medida de la bondad de ajuste del modelo spline suavizado , lo que sugiere un buen ajuste del modelo a los datos; lo que indica que la velocidad con que llegan los tres primeros  vagones del Metro de Medellín a las estaciones se pueden modelar y/o ajustar con un modelo de regresion no lineal como el spline suavizado, teniendo en cuenta el tiempo de llegada de éstos a la estación, y ademas se pueden hacer predicciones, teniendo en cuenta que en condiciones normales de operación del servicio, el tiempo que emplea un tren al entrar por cierta punto de referencia a la estación no es exageradamente grande y se puede medir en segundos.
 
 
 
@@ -170,18 +222,18 @@ lines(names(media_estatura), media_estatura, col = "red", type = "b")
 mujer<- data.frame(Eda=femenino$EDAD , esta=femenino$ESTATURAP1)
 modmujer= nls(esta~ SSlogis(log(Eda), Asym, xmid, scal), mujer)
 summary(modmujer)
-## the coefficients only:
+
 coef(modmujer)
-## including their SE, etc:
+
 coef(summary(modmujer))
 ```
 
 
-Según los resultados arrojados acerca del ajuste de la curva del modelo logistico suavizado, Asym=199.16051  representa el valor asintótico superior o límite superior que la variable dependiente (en este caso, la estatura) se acerca a medida que la variable independiente (la edad) aumenta o disminuye infinitamente. En otras palabras, "Asym" indica el valor máximo al que tiende la variable dependiente. En un contexto de crecimiento, esto podría representar la estatura máxima que una persona podría alcanzar. xmid=1.53644  representa la ubicación del punto medio o el valor de la variable independiente en el cual la variable dependiente alcanza la mitad de su valor asintótico superior. En el contexto de la relación entre la edad y la estatura, "xmid" indica la edad en la que se espera que la estatura alcance el 50% de su valor máximo; y scal   0.9338134 representa la ubicación del punto medio o el valor de la variable independiente en el cual la variable dependiente alcanza la mitad de su valor asintótico superior. En el contexto de la relación entre la edad y la estatura, "xmid" indica la edad en la que se espera que la estatura alcance el 50% de su valor máximo
+Según los resultados arrojados acerca del ajuste de la curva del modelo logistico suavizado, Asym=199.16051  representa el valor asintótico superior o límite superior que la variable dependiente (en este caso, la estatura) se acerca a $199.16051$ a medida que la variable independiente (la edad) aumenta infinitamente, teniendo en cuenta las edades limites para la categoría de niño y/o adolescentes. En otras palabras, "Asym" indica el valor máximo al que tiende la variable dependiente. En un contexto de crecimiento, esto podría representar la estatura máxima que una persona podría alcanzar. Xmid=1.53644  representa la ubicación del punto medio o el valor de la variable independiente en el cual la variable dependiente alcanza la mitad de su valor asintótico superior. En el contexto de la relación entre la edad y la estatura, "xmid" indica la edad en la que se espera que la estatura alcance el 50% de su valor máximo; y $scal=0.9338134$ este parámetro controla la pendiente de la curva logística en el punto medio (xmid). Cuanto mayor es el valor de scal, más pronunciada es la pendiente en el punto medio, lo que significa que los cambios en la variable predictora (edad en este caso) tienen un efecto más marcado en la variable de respuesta (estatura), como se ve acontinuación en el gráfico.
 
 
 ```{r}
-
+library(ggplot2)
 
 ggplot(data = mujer, aes(x = Eda, y = esta)) +
   geom_point() +
@@ -208,7 +260,6 @@ lines(names(media_esta), media_esta, col = "red", type = "b")
  
  
 ```{r}
-
 plot( maduraciónsexual$EDAD, maduraciónsexual$ESTATURAP1, pch = 19, col = "blue",  xlab = "Edad", ylab = "Estatura")
 media_estatu<- tapply(maduraciónsexual$ESTATURAP1, maduraciónsexual$EDAD, mean)
 lines(names(media_estatu), media_estatu, col = "red", type = "b")
@@ -232,7 +283,7 @@ Achieved convergence tolerance: 4.834e-07 indica la tolerancia de convergencia a
 
 
 ```{r}
-library(ggplot2)
+
 ggplot(data = hombre, aes(x = edad, y = estatura)) +
   geom_point() +
   labs(x = "Edad de hombres", y = "Estatura de hombres") +
@@ -263,7 +314,6 @@ En general se observa que el crecimiento de las personas en este estudio es hast
 
 ```{r}
 nuevas_edades <- data.frame(edad = c(20, 25, 30, 35, 40))
-
 pronosticos <- predict(modelo_logistico_hombre, newdata = nuevas_edades)
 pronosticos
 
@@ -281,37 +331,87 @@ deviance(modelo_logistico_hombre)
 
 
 
-
-
-
-
-
-PUNTO DE NADADORES
+4: PUNTO DE NADADORES
 
 ```{r}
-Nadadores <- read.table("Finalestilolibre400metros.txt", header = TRUE, sep = "\t",  stringsAsFactors = FALSE)
+Nadadores <- read.table("Finalestilolibre400metros.txt", header = FALSE, sep = "\t",  stringsAsFactors = FALSE)
 head(Nadadores)
 ```
 
 ```{r}
+library(tidyverse)
 sexo<-c(rep(1,36),rep(2,43))
-```
 
-```{r}
-temp<-matrix(temp,ncol=16,byrow=T)
+temp <- read_delim("Finalestilolibre400metros.txt", col_names = FALSE) %>% as.data.frame()
+names(temp) <- paste0("x", 1:16)
+temp<-as.matrix(temp)
 temp
-temp2<-matrix(as.numeric(temp[,-c(1,2)]),ncol=14,byrow=F)
+temp2<- apply(temp[,-c(1,2)], 2, function(x)as.numeric(x))
 temp2
 tiempos.seg<-cbind(temp2[,c(1 ,2)],60*temp2[,c(3,5,7,9,11,13)]+temp2[,c(3,5,7,9,11,13)+1])
 tiempos.seg
-matplot(t(tiempos.seg),type="b")
+matplot(t(tiempos.seg),type="b", ylab="Tiempo", xlab="Tramos de piscina")
 boxplot(tiempos.seg)
 plot(tiempos.seg[,1],tiempos.seg[,8])
 cor(tiempos.seg)
 temp3<-apply(tiempos.seg,1,rank)
 cor(temp3)
+veloc<-50/cbind(tiempos.seg[,1],tiempos.seg[,2]-tiempos.seg[,1],
+                tiempos.seg[,3]-tiempos.seg[,2],tiempos.seg[,4]-tiempos.seg[,3],
+                tiempos.seg[,5]-tiempos.seg[,4],tiempos.seg[,6]-tiempos.seg[,5],
+                tiempos.seg[,7]-tiempos.seg[,6],tiempos.seg[,8]-tiempos.seg[,7])
+
+colMeans(veloc)
+cor(veloc)
+colMeans(veloc[sexo==1,])
+cor(veloc[sexo==1,])
+colMeans(veloc[sexo==2,])
+cor(veloc[sexo==2,])
+par(mfrow=c(1,1))
+```
+A medida que un nadador realiza un recorrido se puede observar como le toma más tiempo, y llama la atención que uno de los representantes, al comienzo del recorrido 4 se toma demasiado tiempo hasta completar el recorrido 6, donde abandona la competencia.
+
+
+```{r}
+matplot(t(veloc),type="b", ylab = "Velocidad de los Nadadores por piscinas", xlab = "piscinas recorridos")
 ```
 
 
+El gráfico deja ver la curva de velocidad de cada nadador respecto a las piscinas que ha recorrido durante la competencia. En ella se observa el competidor que presentó problemas de tiempo en  la gráfica anterior, durante el recorrido 4  no sigue la tendencia del resto de sus adversarios, al parecer tuvo alguna eventualidad que le hizo perder el ritmo velocidad de nado, al parecer, algún accidente le hizo parar en la competencia, quiso retomar al completar el recorrido 5, sin embargo la velocidad de nado no fue la más optima y se tuvo que retirar de la competencia.
+
+
+
+```{r}
+names(temp) <- paste0("x", 1:16)
+temp2 <- as.matrix(temp)
+tiempos.seg <- cbind(temp2[, c(1 ,2)], 60 * temp2[, c(3, 5, 7, 9, 11, 13)] + temp2[, c(3, 5, 7, 9, 11, 13) + 1])
+
+distancia <- c(50, 100, 150, 200, 250, 300, 400)
+
+
+velocidad <- distancia / tiempos.seg
+
+modelo_nls <- nls(velocidad ~ a * tiempos.seg[, 1] + b, 
+                   data = data.frame(velocidad, tiempos.seg),
+                   start = list(a = 1, b = 0))
+summary(modelo_nls)
+```
+
+```{r}
+
+if (!require(segmented)) {
+  install.packages("segmented")
+  library(segmented)
+}
+
+# Supongamos que los datos de distancia y tiempo están en un dataframe llamado 'datos'
+# Debes tener una columna llamada 'distancia' y una columna llamada 'tiempo'
+
+# Ajusta un modelo de segmentos de línea recta
+modelo_segmentado <- segmented(lm(tiempos.seg ~ distancia, data = temp), 
+                                seg.Z = ~distancia, psi = list(distancia = c(20, 200, 370)))
+
+summary(modelo_segmentado)
+```
 
 
