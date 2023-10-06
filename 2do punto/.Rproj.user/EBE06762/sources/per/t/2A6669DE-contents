@@ -1,0 +1,183 @@
+---
+title: "2do punto"
+output: html_document
+date: "2023-10-02"
+---
+
+
+```{r cars}
+datos <- read.csv("datos.csv",sep=" ")
+```
+
+```{r}
+huevos.dat<- datos[,1:4]
+colnames(huevos.dat) <- c("Largo","Ancho","Peso","Volumen")
+```
+
+```{r}
+Largo_Huevo <- huevos.dat[,1]
+Ancho_Huevo <- huevos.dat[,2]
+Peso_Huevo <- huevos.dat[,3]
+Volumen_Huevo <- huevos.dat[,4]
+
+radioL<-Largo_Huevo/2
+radioA<-Ancho_Huevo/2
+
+VL<-4/3*pi*radioL^3
+VA<-4/3*pi*radioA^3
+```
+
+```{r}
+new.data <- data.frame(VL=VL,VA=VA,VHUE=Volumen_Huevo)
+```
+
+
+## Analisis descriptivo
+
+```{r}
+pairs(new.data)
+```
+# Modelos:
+
+## Modelo 1:
+
+```{r}
+# Cargar la biblioteca minpack.lm
+library(minpack.lm)
+
+
+# Función de modelo
+modelo <- function(x1,x2,a,b) {
+  return(x1^a + x2^b)
+}
+
+# Estimar valores iniciales utilizando nlsLM
+ajuste_inicial <- nlsLM(data= new.data, VHUE ~ modelo(VL,VA,a,b),
+                        start = list(a = 1,b = 1))
+
+# Obtener los valores iniciales estimados
+valores_iniciales_estimados <- coef(ajuste_inicial)
+#print(valores_iniciales_estimados)
+
+# Ajustar el modelo final con los valores iniciales estimados
+ajuste_final <- nls(data = new.data, VHUE ~ modelo(VL,VA,a,b),
+                      start = valores_iniciales_estimados)
+```
+
+```{r}
+summary(ajuste_final)
+```
+
+El MSE se observa en el resumen anterior (3.723)
+
+## Residuales:
+```{r}
+residuales_m1 <- residuals(ajuste_final)
+residuales_m1
+```
+
+Ahora calcularemos el error absoluto medio donde este es es una medicion de la bondad de ajuste del modelo apartir de los residuales ya calculados
+
+```{r}
+mae <- mean(abs(residuales_m1))
+mae
+```
+
+## Modelos 2: 
+
+```{r}
+# Cargar la biblioteca minpack.lm
+library(minpack.lm)
+
+# Función de modelo
+modelo <- function(x1,x2,a) {
+  return(x1^a * x2^(1-a))
+}
+
+# Estimar valores iniciales utilizando nlsLM
+ajuste_inicial <- nlsLM(data= new.data, VHUE ~ modelo(VL,VA,a),
+                        start = list(a = 1))
+
+# Obtener los valores iniciales estimados
+valores_iniciales_estimados <- coef(ajuste_inicial)
+
+# Ajustar el modelo final con los valores iniciales estimados
+ajuste_final_m2 <- nls(data = new.data, VHUE ~ modelo(VL,VA,a),
+                      start = valores_iniciales_estimados)
+```
+
+```{r}
+summary(ajuste_final_m2)
+```
+El MSE se observa en el resumen anterior (2.343)
+
+## Residuales:
+```{r}
+residuales_m2 <- residuals(ajuste_final_m2)
+residuales_m2
+```
+
+Ahora calcularemos el error absoluto medio donde este es es una medicion de la bondad de ajuste del modelo apartir de los residuales ya calculados
+
+```{r}
+mae <- mean(abs(residuales_m2))
+mae
+```
+
+## Modelo 3:
+
+```{r}
+# Cargar la biblioteca minpack.lm
+library(minpack.lm)
+
+
+# Función de modelo
+modelo <- function(x1,x2,a) {
+  return(x1^a + x2^(1-a))
+}
+
+# Estimar valores iniciales utilizando nlsLM
+ajuste_inicial <- nlsLM(data= new.data, VHUE ~ modelo(VL,VA,a),
+                        start = list(a = 1))
+
+# Obtener los valores iniciales estimados
+valores_iniciales_estimados <- coef(ajuste_inicial)
+
+# Ajustar el modelo final con los valores iniciales estimados
+ajuste_final_m3 <- nls(data = new.data, VHUE ~ modelo(VL,VA,a),
+                      start = valores_iniciales_estimados)
+```
+
+```{r}
+summary(ajuste_final_m3)
+```
+El MSE se observa en el resumen anterior (5.625)
+
+## Residuales:
+```{r}
+residuales_m3 <- residuals(ajuste_final_m3)
+residuales_m3
+```
+
+Ahora calcularemos el error absoluto medio donde este es es una medicion de la bondad de ajuste del modelo apartir de los residuales ya calculados
+
+```{r}
+mae <- mean(abs(residuales_m3))
+mae
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,3 @@
+"0","lines(seq(1, 8, length.out = 50), "
+"0","      predict(ajuste_final, "
+"0","              newdata = data.frame(x = seq(1, 8, length.out = 50))))"

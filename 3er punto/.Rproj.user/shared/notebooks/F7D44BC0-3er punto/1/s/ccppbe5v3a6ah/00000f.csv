@@ -1,0 +1,5 @@
+"0","Estatura <- maduraciónsexual$ESTATURAP1"
+"0","Edad <- maduraciónsexual$EDAD"
+"0",""
+"0","datos<-data.frame(Estatura, Edad)"
+"0","plot(Estatura~ Edad, data=datos)"

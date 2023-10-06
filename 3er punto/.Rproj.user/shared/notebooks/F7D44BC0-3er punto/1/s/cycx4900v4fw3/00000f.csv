@@ -1,0 +1,2 @@
+"0","Nadadores <- read.table(""Finalestilolibre400metros.txt"", header = FALSE, sep = ""\t"",  stringsAsFactors = FALSE)"
+"0","head(Nadadores)"

@@ -1,0 +1,2 @@
+"0","matplot(t(veloc),type=""b"", ylab = ""Velocidad de los Nadadores por piscinas"", xlab = ""piscinas recorridos"")"
+"2","Warning: default 'pch' is smaller than number of columns and hence recycled"

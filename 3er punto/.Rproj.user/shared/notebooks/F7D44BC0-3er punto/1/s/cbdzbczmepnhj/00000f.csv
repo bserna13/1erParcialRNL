@@ -1,0 +1,3 @@
+"0","masculino <- maduraciónsexual[maduraciónsexual$SEXO == 1, ]"
+"0","femenino <- maduraciónsexual[maduraciónsexual$SEXO == 2, ]"
+"0",""

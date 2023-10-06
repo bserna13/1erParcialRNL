@@ -1,0 +1,13 @@
+"0","library(readr)"
+"0","maduraciónsexual <- read_csv2(""maduraciónsexual.csv"")"
+"2","[36mℹ[39m Using [34m[34m""','""[34m[39m as decimal and [34m[34m""'.'""[34m[39m as grouping mark. Use `read_delim()` for more control.
+"
+"2","[1mRows: [22m[34m2619[39m [1mColumns: [22m[34m28[39m"
+"2","[36m──[39m [1mColumn specification[22m [36m─────────────────────────────────────────────────────────────────[39m
+[1mDelimiter:[22m "";""
+[31mchr[39m  (8): FECHA, APELLIDO1, APELLIDO2, NOMBRE, ESTEDUCATI, BARRIO, FECHANACIM, BARRIO...
+[32mdbl[39m (20): NUMERO, ESTRATOESC, TIPO, NIVEL, EDAD, SEXO, ESTRATO, COMUNA, ESCOLARIDA, A..."
+"2","
+[36mℹ[39m Use `spec()` to retrieve the full column specification for this data.
+[36mℹ[39m Specify the column types or set `show_col_types = FALSE` to quiet this message."
+"0","head(maduraciónsexual)"

@@ -1,0 +1,1 @@
+"0","plot( maduraciónsexual$EDAD, maduraciónsexual$ESTATURAP1, pch = 19, col = ""blue"",  xlab = ""Edad"", ylab = ""Estatura"")"

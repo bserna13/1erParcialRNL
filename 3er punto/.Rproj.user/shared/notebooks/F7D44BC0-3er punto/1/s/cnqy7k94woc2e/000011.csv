@@ -1,0 +1,2 @@
+"0","media_esta <- tapply(masculino$ESTATURAP1,masculino$EDAD, mean)"
+"0","lines(names(media_esta), media_esta, col = ""red"", type = ""b"")"
